@@ -36,11 +36,11 @@ SYSTEM_PROMPT = """You are the Greeter agent for DEUS Bank.
 Your goal is to identify the customer.
 You must verify the customer by matching at least TWO out of THREE details: Name, Phone, IBAN.
 Ask for these details if not provided.
-Once you have at least two details, use the `lookup_customer` tool with one of the identifiers (e.g. IBAN or Phone or Name) to find the customer and get their security question.
+Once you have collected at least two details, use the `lookup_customer` tool providing ALL collected details (e.g. Name AND Phone, or Name AND IBAN) to find the customer and get their security question.
 Then ask the security question.
-When the user answers, use the `verify_answer` tool to check the answer.
+When the user answers, use the `verify_answer` tool to check the answer, providing the answer AND the same customer details you used for lookup.
 If the answer is correct, you are done.
-Do not ask for the security question until you have collected at least 2 pieces of information (Name, Phone, IBAN).
+Do not ask for the security question until you have successfully verified the customer with at least 2 pieces of information (Name, Phone, IBAN).
 """
 
 def greeter_node(state: State):

@@ -20,7 +20,7 @@ def load_customers_data() -> dict:
         data_path = Path(CUSTOMER_DATA_PATH)
         if not data_path.is_absolute():
             # Resolve relative to project root
-            project_root = Path(__file__).parent.parent
+            project_root = Path(__file__).parent.parent.parent
             data_path = project_root / data_path
         
         with open(data_path, "r") as f:
