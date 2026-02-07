@@ -10,7 +10,8 @@ from langgraph.prebuilt import ToolNode
 
 from src.graph.state import State
 from src.agents.greeter import greeter_node
-from src.tools.greeterTools import lookup_customer, verify_answer
+from src.agents.bouncer import bouncer_node
+from src.tools.greeter_tools import lookup_customer, verify_answer
 from src.graph.routing import (
     greeter_router,
     route_after_bouncer,
@@ -27,8 +28,7 @@ def build_graph():
     tool_node = ToolNode(tools)
     builder.add_node("greeter_tools", tool_node)
     
-    # Placeholder nodes
-    builder.add_node("bouncer", lambda state: {"messages": []})
+    builder.add_node("bouncer", bouncer_node)
 
     # Edges
     builder.set_entry_point("greeter")

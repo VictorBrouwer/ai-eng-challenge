@@ -36,7 +36,7 @@ def lookup_customer(name: Optional[str] = None, phone: Optional[str] = None, iba
     """
     Verifies the customer identity using at least two details (name, phone, IBAN).
     You must provide at least two arguments.
-    If verified, returns the security question.
+    If verified, returns the secret question.
     """
     provided_details = [d for d in [name, phone, iban] if d]
     if len(provided_details) < 2:
@@ -56,7 +56,7 @@ def lookup_customer(name: Optional[str] = None, phone: Optional[str] = None, iba
 @tool
 def verify_answer(answer: str, name: Optional[str] = None, phone: Optional[str] = None, iban: Optional[str] = None) -> str:
     """
-    Checks the answer to the security question for the customer identified by the provided details.
+    Checks the answer to the secret question for the customer identified by the provided details.
     Provide the same name, phone, or IBAN used in lookup_customer.
     """
     try:

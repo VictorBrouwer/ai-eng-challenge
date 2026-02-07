@@ -17,30 +17,18 @@ from langchain_openai import ChatOpenAI
 
 from src.graph.state import State
 from src.graph.config import LLM_MODEL, LLM_TEMPERATURE
-from src.tools.greeterTools import lookup_customer, verify_answer
+from src.tools.greeter_tools import lookup_customer, verify_answer
 
-# ── Structured-output schemas ────────────────────────────────────
-
-class CustomerInfoExtraction(BaseModel):
-    """Extracted customer information from the conversation."""
-    name: Optional[str] = Field(None, description="The customer's full name if provided")
-    phone: Optional[str] = Field(None, description="The customer's phone number if provided")
-    iban: Optional[str] = Field(None, description="The customer's IBAN if provided")
-
-
-class SecretAnswerExtraction(BaseModel):
-    """Extracted secret answer from the conversation."""
-    answer: str = Field(..., description="The direct answer to the secret question, without extra text.")
 
 SYSTEM_PROMPT = """You are the Greeter agent for DEUS Bank.
 Your goal is to identify the customer.
 You must verify the customer by matching at least TWO out of THREE details: Name, Phone, IBAN.
 Ask for these details if not provided.
-Once you have collected at least two details, use the `lookup_customer` tool providing ALL collected details (e.g. Name AND Phone, or Name AND IBAN) to find the customer and get their security question.
-Then ask the security question.
+Once you have collected at least two details, use the `lookup_customer` tool providing ALL collected details (e.g. Name AND Phone, or Name AND IBAN) to find the customer and get their secret question.
+Then ask the secret question.
 When the user answers, use the `verify_answer` tool to check the answer, providing the answer AND the same customer details you used for lookup.
 If the answer is correct, you are done.
-Do not ask for the security question until you have successfully verified the customer with at least 2 pieces of information (Name, Phone, IBAN).
+Do not ask for the secret question until you have successfully verified the customer with at least 2 pieces of information (Name, Phone, IBAN).
 """
 
 def greeter_node(state: State):
