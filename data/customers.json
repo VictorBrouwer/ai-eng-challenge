@@ -1,0 +1,39 @@
+{
+  "customers": [
+    {
+      "name": "Lisa",
+      "phone": "+1122334455",
+      "iban": "DE89370400440532013000",
+      "secret": "What is the name of my dog?",
+      "answer": "Yoda"
+    },
+    {
+      "name": "John Smith",
+      "phone": "+1234567890",
+      "iban": "DE89370400440532013001",
+      "secret": "What city were you born in?",
+      "answer": "Berlin"
+    },
+    {
+      "name": "Maria Garcia",
+      "phone": "+9876543210",
+      "iban": "ES9121000418450200051332",
+      "secret": "What is your mother's maiden name?",
+      "answer": "Rodriguez"
+    }
+  ],
+  "accounts": [
+    {
+      "iban": "DE89370400440532013000",
+      "premium": true
+    },
+    {
+      "iban": "DE89370400440532013001",
+      "premium": false
+    },
+    {
+      "iban": "ES9121000418450200051332",
+      "premium": true
+    }
+  ]
+}
