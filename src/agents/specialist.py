@@ -5,11 +5,11 @@ Acts as an intelligent router for premium clients with high-value requests.
 Classifies the request and routes to the appropriate expert department.
 """
 
-from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
 from src.graph.state import State
 from src.graph.config import LLM_MODEL, LLM_TEMPERATURE
 from src.tools.specialist_tools import route_to_expert
+from src.graph.summarization import build_invocation_messages
 
 EXPERT_DEPARTMENTS = {
     "yacht_insurance": "Yacht & Marine Insurance — call +1999888001",
@@ -48,7 +48,11 @@ def specialist_node(state: State):
     model_with_tools = model.bind_tools([route_to_expert])
     
     messages = state["messages"]
-    invocation_messages = [SystemMessage(content=SYSTEM_PROMPT)] + messages
+    invocation_messages = build_invocation_messages(
+        SYSTEM_PROMPT,
+        messages,
+        state.get("summary"),
+    )
     
     response = model_with_tools.invoke(invocation_messages)
     return {"messages": [response], "active_agent": "specialist"}

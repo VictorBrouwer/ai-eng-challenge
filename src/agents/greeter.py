@@ -8,7 +8,6 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 from langchain_core.messages import (
-    SystemMessage,
     HumanMessage,
     AIMessage,
     ToolMessage,
@@ -18,6 +17,7 @@ from langchain_openai import ChatOpenAI
 from src.graph.state import State
 from src.graph.config import LLM_MODEL, LLM_TEMPERATURE
 from src.tools.greeter_tools import lookup_customer, verify_answer
+from src.graph.summarization import build_invocation_messages
 
 
 SYSTEM_PROMPT = """You are the Greeter agent for DEUS Bank.
@@ -40,13 +40,11 @@ def greeter_node(state: State):
     model_with_tools = model.bind_tools(tools)
     
     messages = state["messages"]
-    # Prepend system message if not present or just ensure it's there for context
-    # Since we are just invoking, let's prepend it to the list of messages passed to the model
-    # but not modify the state (unless we return it, which we do).
-    # However, usually we don't want to duplicate system messages in the state history.
-    # So we'll construct a list for invocation.
-    
-    invocation_messages = [SystemMessage(content=SYSTEM_PROMPT)] + messages
+    invocation_messages = build_invocation_messages(
+        SYSTEM_PROMPT,
+        messages,
+        state.get("summary"),
+    )
     
     response = model_with_tools.invoke(invocation_messages)
     return {"messages": [response], "active_agent": "greeter"}

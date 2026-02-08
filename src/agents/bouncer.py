@@ -2,11 +2,11 @@
 Bouncer agent node.
 """
 
-from langchain_core.messages import SystemMessage
 from langchain_openai import ChatOpenAI
 from src.graph.state import State
 from src.graph.config import LLM_MODEL, LLM_TEMPERATURE
 from src.tools.bouncer_tools import check_account_status, handoff_to_specialist
+from src.graph.summarization import build_invocation_messages
 
 SYSTEM_PROMPT = """You are the Bouncer agent for DEUS Bank.
 The user has been verified by the Greeter agent.
@@ -43,8 +43,11 @@ def bouncer_node(state: State):
     model_with_tools = model.bind_tools([check_account_status, handoff_to_specialist])
     
     messages = state["messages"]
-    # We prepend the system prompt to set the context for the bouncer
-    invocation_messages = [SystemMessage(content=SYSTEM_PROMPT)] + messages
+    invocation_messages = build_invocation_messages(
+        SYSTEM_PROMPT,
+        messages,
+        state.get("summary"),
+    )
     
     response = model_with_tools.invoke(invocation_messages)
     return {"messages": [response], "active_agent": "bouncer"}

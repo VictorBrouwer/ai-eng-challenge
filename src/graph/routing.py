@@ -3,7 +3,10 @@ Routing logic.
 """
 
 from typing import Literal
+
 from langchain_core.messages import HumanMessage, ToolMessage
+
+from src.graph.config import SUMMARY_TRIGGER_MESSAGES
 from src.graph.state import State
 
 def await_input_node(state: State) -> dict:
@@ -12,7 +15,9 @@ def await_input_node(state: State) -> dict:
     """
     return {}
 
-def route_after_await_input(state: State) -> Literal["greeter", "bouncer", "specialist", "__end__"]:
+def route_after_await_input(
+    state: State,
+) -> Literal["greeter", "bouncer", "specialist", "summarize_conversation", "__end__"]:
     """
     Route to the currently active agent once input is available.
     """
@@ -21,10 +26,13 @@ def route_after_await_input(state: State) -> Literal["greeter", "bouncer", "spec
         return "__end__"
 
     last_message = messages[-1]
-    if not isinstance(last_message, HumanMessage):
-        return "__end__"
+    if isinstance(last_message, HumanMessage):
+        return state.get("active_agent", "greeter")
 
-    return state.get("active_agent", "greeter")
+    if len(messages) > SUMMARY_TRIGGER_MESSAGES:
+        return "summarize_conversation"
+
+    return "__end__"
 
 
 def dispatcher(state: State) -> Literal["greeter", "bouncer", "specialist"]:

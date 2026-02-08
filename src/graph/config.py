@@ -16,3 +16,6 @@ LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0"))
 
 # Customer Data Path
 CUSTOMER_DATA_PATH = os.getenv("CUSTOMER_DATA_PATH", "data/customers.json")
+
+# Conversation memory
+SUMMARY_TRIGGER_MESSAGES = int(os.getenv("SUMMARY_TRIGGER_MESSAGES", "10"))

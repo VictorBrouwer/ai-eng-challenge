@@ -18,6 +18,7 @@ from src.graph.routing import (
     route_after_bouncer_tools,
     route_after_specialist,
 )
+from src.graph.summarization import summarize_conversation
 from src.agents.greeter import greeter_node
 from src.agents.bouncer import bouncer_node
 from src.agents.specialist import specialist_node
@@ -41,6 +42,7 @@ def build_graph():
     builder.add_node("greeter", greeter_node)
     builder.add_node("bouncer", bouncer_node)
     builder.add_node("specialist", specialist_node)
+    builder.add_node("summarize_conversation", summarize_conversation)
 
     # Tool execution nodes
     greeter_tools = ToolNode([lookup_customer, verify_answer])
@@ -62,6 +64,7 @@ def build_graph():
             "greeter": "greeter",
             "bouncer": "bouncer",
             "specialist": "specialist",
+            "summarize_conversation": "summarize_conversation",
             "__end__": END,
         },
     )
@@ -122,6 +125,9 @@ def build_graph():
 
     # After specialist tools execute, return to specialist to deliver result
     builder.add_edge("specialist_tools", "specialist")
+
+    # After summarization, wait for more input
+    builder.add_edge("summarize_conversation", "await_input")
 
     # ── Compile ───────────────────────────────────────────────────────
     checkpointer = MemorySaver()
