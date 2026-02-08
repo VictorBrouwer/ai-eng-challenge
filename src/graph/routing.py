@@ -82,8 +82,7 @@ def greeter_router(state: State) -> Literal["end_interaction", "call_tool", "go_
 def route_after_greeter_tools(state: State) -> Literal["go_to_bouncer", "return_to_greeter"]:
     """
     After greeter_tools executes, check whether the tool that just ran
-    verified the user successfully. If so, route directly to bouncer to
-    avoid an extra greeter response.
+    verified the user successfully. If so, route to bouncer directly.
     """
     messages = state["messages"]
     last_message = messages[-1]
@@ -131,3 +130,24 @@ def route_after_specialist(state: State) -> Literal["call_tool", "continue_speci
     
     # Wait for user input or conversation ends naturally
     return "continue_specialist"
+
+def route_after_guardrail(state: State) -> Literal["await_input", "__end__"]:
+    """
+    Determine next step after guardrail.
+    Check if we should end the interaction based on the agent's logic.
+    """
+    active_agent = state.get("active_agent")
+    messages = state["messages"]
+
+    if active_agent == "greeter":
+        # Check for failed verification attempts
+        failed_attempts = 0
+        for msg in messages:
+            if isinstance(msg, ToolMessage) and msg.name == "verify_answer":
+                if "VERIFIED" not in msg.content:
+                    failed_attempts += 1
+        
+        if failed_attempts >= 3:
+            return "__end__"
+            
+    return "await_input"

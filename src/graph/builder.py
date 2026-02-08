@@ -17,11 +17,13 @@ from src.graph.routing import (
     route_after_bouncer,
     route_after_bouncer_tools,
     route_after_specialist,
+    route_after_guardrail,
 )
 from src.graph.summarization import summarize_conversation
 from src.agents.greeter import greeter_node
 from src.agents.bouncer import bouncer_node
 from src.agents.specialist import specialist_node
+from src.agents.guardrail import guardrail_node
 from src.tools.greeter_tools import lookup_customer, verify_answer
 from src.tools.bouncer_tools import check_account_status, handoff_to_specialist
 from src.tools.specialist_tools import route_to_expert
@@ -42,6 +44,7 @@ def build_graph():
     builder.add_node("greeter", greeter_node)
     builder.add_node("bouncer", bouncer_node)
     builder.add_node("specialist", specialist_node)
+    builder.add_node("guardrail", guardrail_node)
     builder.add_node("summarize_conversation", summarize_conversation)
 
     # Tool execution nodes
@@ -76,8 +79,8 @@ def build_graph():
         {
             "call_tool": "greeter_tools",
             "go_to_bouncer": "bouncer",
-            "continue_greeter": "await_input",  # consume next user message
-            "end_interaction": END,
+            "continue_greeter": "guardrail",  # consume next user message
+            "end_interaction": "guardrail",
         },
     )
 
@@ -97,7 +100,7 @@ def build_graph():
         route_after_bouncer,
         {
             "call_tool": "bouncer_tools",
-            "continue_bouncer": "await_input",  # consume next user message
+            "continue_bouncer": "guardrail",  # consume next user message
             "end_interaction": END,
         },
     )
@@ -118,13 +121,23 @@ def build_graph():
         route_after_specialist,
         {
             "call_tool": "specialist_tools",
-            "continue_specialist": "await_input",  # consume next user message
+            "continue_specialist": "guardrail",  # consume next user message
             "end_interaction": END,
         },
     )
 
     # After specialist tools execute, return to specialist to deliver result
     builder.add_edge("specialist_tools", "specialist")
+
+    # ── Guardrail edges ──────────────────────────────────────────────
+    builder.add_conditional_edges(
+        "guardrail",
+        route_after_guardrail,
+        {
+            "await_input": "await_input",
+            "__end__": END,
+        },
+    )
 
     # After summarization, wait for more input
     builder.add_edge("summarize_conversation", "await_input")

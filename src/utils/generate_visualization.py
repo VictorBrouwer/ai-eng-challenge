@@ -1,8 +1,10 @@
 import sys
-import os
+from pathlib import Path
 
-# Add current directory to path
-sys.path.append(os.getcwd())
+# Add project root to Python path
+project_root = Path(__file__).resolve().parents[2]
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 try:
     from src.graph.builder import build_graph
