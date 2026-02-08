@@ -3,8 +3,28 @@ Routing logic.
 """
 
 from typing import Literal
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import HumanMessage, ToolMessage
 from src.graph.state import State
+
+def await_input_node(state: State) -> dict:
+    """
+    Pass-through node that waits for new user input to arrive in state.
+    """
+    return {}
+
+def route_after_await_input(state: State) -> Literal["greeter", "bouncer", "specialist", "__end__"]:
+    """
+    Route to the currently active agent once input is available.
+    """
+    messages = state.get("messages", [])
+    if not messages:
+        return "__end__"
+
+    last_message = messages[-1]
+    if not isinstance(last_message, HumanMessage):
+        return "__end__"
+
+    return state.get("active_agent", "greeter")
 
 
 def dispatcher(state: State) -> Literal["greeter", "bouncer", "specialist"]:
@@ -50,6 +70,21 @@ def greeter_router(state: State) -> Literal["end_interaction", "call_tool", "go_
     # Default: wait for user input
     return "continue_greeter"
 
+
+def route_after_greeter_tools(state: State) -> Literal["go_to_bouncer", "return_to_greeter"]:
+    """
+    After greeter_tools executes, check whether the tool that just ran
+    verified the user successfully. If so, route directly to bouncer to
+    avoid an extra greeter response.
+    """
+    messages = state["messages"]
+    last_message = messages[-1]
+
+    if isinstance(last_message, ToolMessage) and last_message.name == "verify_answer":
+        if "VERIFIED" in last_message.content:
+            return "go_to_bouncer"
+
+    return "return_to_greeter"
 
 def route_after_bouncer(state: State) -> Literal["call_tool", "continue_bouncer"]:
     messages = state["messages"]
