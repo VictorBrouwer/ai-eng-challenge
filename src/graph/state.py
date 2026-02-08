@@ -11,3 +11,4 @@ class State(MessagesState):
     
     Inherits 'messages' from MessagesState.
     """
+    active_agent: str = "greeter"

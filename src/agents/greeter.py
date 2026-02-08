@@ -49,4 +49,4 @@ def greeter_node(state: State):
     invocation_messages = [SystemMessage(content=SYSTEM_PROMPT)] + messages
     
     response = model_with_tools.invoke(invocation_messages)
-    return {"messages": [response]}
+    return {"messages": [response], "active_agent": "greeter"}
