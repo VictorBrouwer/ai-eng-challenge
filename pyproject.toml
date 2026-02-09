@@ -15,4 +15,16 @@ dependencies = [
     "httpx",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-timeout>=2.0.0",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests requiring real LLM calls (deselect with '-m \"not integration\"')",
+]
+timeout = 180
+
 [tool.uv]
