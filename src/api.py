@@ -11,6 +11,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from src.graph.builder import build_graph
 from langchain_core.messages import HumanMessage, AIMessage
@@ -28,6 +29,10 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     thread_id: str
+
+@app.get("/")
+async def root():
+    return FileResponse(project_root / 'static' / 'index.html')
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):

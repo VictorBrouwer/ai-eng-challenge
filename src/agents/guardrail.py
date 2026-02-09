@@ -9,8 +9,9 @@ from src.graph.state import State
 
 # 1. Define the Security Policy
 SECURITY_POLICY = """
+- *The AI MAY ask any secret question
 - *The AI must NOT expose or repeat sensitive data (PII, passwords, account numbers).
-- *The AI MAY request standard verification details (e.g., phone number or IBAN) when necessary for customer service, but must do so professionally and securely.
+- *The AI MAY request verification details inlcuding name,phone number and IBAN when necessary for customer service, but must do so professionally and securely.
 - **NO UNAUTHORIZED ACTIONS**: The AI cannot promise loans, approve mortgages, or set interest rates. It must explicitly state it cannot do this if asked.
 - **COMPANY TONE**: The response must be polite, professional, and concise.
 - **ON-TOPIC**: Avoid political, religious, or controversial discussions.
