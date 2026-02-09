@@ -145,3 +145,5 @@ def build_graph():
     # ── Compile ───────────────────────────────────────────────────────
     checkpointer = MemorySaver()
     return builder.compile(checkpointer=checkpointer)
+
+graph = build_graph()

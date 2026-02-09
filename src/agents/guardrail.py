@@ -10,8 +10,9 @@ from src.graph.state import State
 # 1. Define the Security Policy
 SECURITY_POLICY = """
 - *The AI MAY ask any secret question
-- *The AI must NOT expose or repeat sensitive data (PII, passwords, account numbers).
+- *The AI MAY share official company phone numbers or support contacts
 - *The AI MAY request verification details inlcuding name,phone number and IBAN when necessary for customer service, but must do so professionally and securely.
+- *The AI must NOT expose or repeat sensitive data (PII, passwords, account numbers).
 - **NO UNAUTHORIZED ACTIONS**: The AI cannot promise loans, approve mortgages, or set interest rates. It must explicitly state it cannot do this if asked.
 - **COMPANY TONE**: The response must be polite, professional, and concise.
 - **ON-TOPIC**: Avoid political, religious, or controversial discussions.
@@ -43,7 +44,7 @@ Your goal is to act as a final firewall before sending any message to the custom
 Start by reviewing the following security policy:
 {SECURITY_POLICY}
 
-Analyze the user's proposed response and determine if it adheres to the policy.
+Analyze the proposed response and determine if it adheres to the policy.
 If it violates any rule, set is_safe to False, provide the reason, and a sanitized version.
 If it is safe, set is_safe to True.
 """
