@@ -29,7 +29,7 @@ services:
   langgraph-api:
     image: langgraph-api
     ports:
-      - "${APP_PORT:-8000}:8000"
+      - "8123:8000"
     depends_on:
       langgraph-redis:
         condition: service_healthy
@@ -43,17 +43,18 @@ services:
       - LANGCHAIN_TRACING_V2=${LANGCHAIN_TRACING_V2:-true}
       - LANGCHAIN_ENDPOINT=${LANGCHAIN_ENDPOINT}
       - LANGCHAIN_PROJECT=${LANGCHAIN_PROJECT}
-      - APP_HOST=0.0.0.0
-      - APP_PORT=8000
       - CUSTOMER_DATA_PATH=${CUSTOMER_DATA_PATH:-data/customers.json}
     volumes:
       - ./data:/app/data
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000')"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
+
+  app:
+    build: .
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    environment:
+      - LANGGRAPH_API_URL=http://langgraph-api:8000
+    depends_on:
+      - langgraph-api
 
 volumes:
   langgraph-data:
