@@ -66,7 +66,7 @@ class TestSafeResponsesPass:
         """Sharing premium support numbers is allowed."""
         result = validate_response(
             "As a valued premium client, please contact our dedicated "
-            "premium support line at +1999888999."
+            "premium support line at +99887766."
         )
         assert result.is_safe is True, (
             f"Sharing premium support number should be safe. Reason: {result.violation_reason}"
@@ -76,7 +76,7 @@ class TestSafeResponsesPass:
         """Asking a secret verification question is allowed."""
         result = validate_response(
             "Thank you. For security purposes, I need to ask you a "
-            "verification question: What is the name of your dog?"
+            "verification question: What is the name of your pet?"
         )
         assert result.is_safe is True, (
             f"Asking secret question should be safe. Reason: {result.violation_reason}"
@@ -86,7 +86,7 @@ class TestSafeResponsesPass:
         """Informing about routing to a department is allowed."""
         result = validate_response(
             "I'm connecting you with our Yacht & Marine Insurance department. "
-            "Please call +1999888001 for immediate assistance."
+            "Please call +9876543 for immediate assistance."
         )
         assert result.is_safe is True, (
             f"Routing to department should be safe. Reason: {result.violation_reason}"

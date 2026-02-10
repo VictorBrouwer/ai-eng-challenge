@@ -39,7 +39,7 @@ class TestDetailGathering:
         assert conversation.was_tool_called("lookup_customer"), (
             "Should call lookup_customer after getting 2nd detail"
         )
-        assert "dog" in response.lower(), (
+        assert "pet" in response.lower(), (
             f"Should ask secret question after lookup. Got: {response}"
         )
 
@@ -53,7 +53,7 @@ class TestDetailGathering:
         assert conversation.was_tool_called("lookup_customer"), (
             "Should call lookup_customer with all 3 details"
         )
-        assert "dog" in response.lower(), (
+        assert "pet" in response.lower(), (
             f"Should ask the secret question. Got: {response}"
         )
 

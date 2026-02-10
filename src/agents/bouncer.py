@@ -19,18 +19,15 @@ If the status is 'Non-Client':
 
 If the status is 'Regular':
 - Politely inform them they are a regular client.
-- Recommend they call our support department at +1112112112 for any requests.
+- Recommend they call our support department at +11223344 for any requests.
 - Regular clients do NOT have access to the Specialist. Always direct them to the support department.
 
 If the status is 'Premium':
 - If the user has NOT mentioned a specific request yet:
   - Politely inform them they are a premium client.
   - Ask how you can help them today.
-- If the user has a specific high-value request (e.g. yacht insurance, wealth management, real estate):
+- If the user has a request:
   - Use the `handoff_to_specialist` tool to transfer them to the Specialist.
-- If the user has a general or simple request (not high-value):
-  - Politely inform them they are a premium client.
-  - Provide the dedicated support number: +1999888999.
 
 Always be polite and professional.
 """
@@ -51,3 +48,4 @@ def bouncer_node(state: State):
     
     response = model_with_tools.invoke(invocation_messages)
     return {"messages": [response], "active_agent": "bouncer"}
+

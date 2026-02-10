@@ -1,3 +1,6 @@
+
+
+
 """
 Specialist agent node.
 
@@ -12,10 +15,10 @@ from src.tools.specialist_tools import route_to_expert
 from src.graph.summarization import build_invocation_messages
 
 EXPERT_DEPARTMENTS = {
-    "yacht_insurance": "Yacht & Marine Insurance — call +1999888001",
-    "wealth_management": "Wealth Management & Advisory — call +1999888002",
-    "real_estate": "Real Estate Services — call +1999888003",
-    "general_premium": "Premium General Support — call +1999888004",
+    "yacht_insurance": "Yacht & Marine Insurance — call +9876543",
+    "wealth_management": "Wealth Management & Advisory — call +1999888",
+    "real_estate": "Real Estate Services — call +888666",
+    "general_premium": "Premium General Support — call +99887766",
 }
 
 DEPARTMENT_LIST = "\n".join(f"- \"{key}\": {desc}" for key, desc in EXPERT_DEPARTMENTS.items())
@@ -32,12 +35,13 @@ Expert categories:
 {DEPARTMENT_LIST}
 
 Guidelines:
+- Alwaysbe polite, professional, and concise
 - If the request is about boats, yachts, or marine insurance, route to "yacht_insurance".
 - If the request is about investments, portfolio management, or financial planning, route to "wealth_management".
 - If the request is about property, mortgages, or real estate transactions, route to "real_estate".
 - For any other premium request that doesn't clearly fit the above, route to "general_premium".
 - You should be able to classify based on the conversation history. If the request is truly unclear, ask ONE clarifying question before routing.
-- Always be polite, professional, and concise.
+- Always add the phone number when routing to the expert department.
 """
 
 def specialist_node(state: State):
@@ -56,3 +60,4 @@ def specialist_node(state: State):
     
     response = model_with_tools.invoke(invocation_messages)
     return {"messages": [response], "active_agent": "specialist"}
+

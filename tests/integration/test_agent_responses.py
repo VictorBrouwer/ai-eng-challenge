@@ -66,9 +66,9 @@ class TestGreeterToolCalling:
         )
 
         assert conversation.was_tool_called("lookup_customer")
-        # Lisa's secret question is about her dog
-        assert "dog" in response.lower(), (
-            f"Greeter should ask about Lisa's dog. Got: {response}"
+        # Lisa's secret question is about her pet
+        assert "pet" in response.lower(), (
+            f"Greeter should ask about Lisa's pet. Got: {response}"
         )
 
     def test_calls_verify_answer_after_user_responds(self, conversation):
@@ -97,7 +97,7 @@ class TestGreeterToolCalling:
         assert conversation.was_tool_called("lookup_customer"), (
             "Greeter should call lookup_customer with all 3 details"
         )
-        assert "dog" in response.lower(), (
+        assert "pet" in response.lower(), (
             f"Should still ask the secret question. Got: {response}"
         )
 
@@ -204,7 +204,7 @@ class TestSpecialistRouting:
 
         route_result = conversation.get_tool_result("route_to_expert")
         assert route_result and "Yacht & Marine Insurance" in route_result
-        assert "+1999888001" in response
+        assert "+9876543" in response
 
     def test_routes_wealth_management(self, conversation):
         """Investment/portfolio request → wealth_management department."""
@@ -214,7 +214,7 @@ class TestSpecialistRouting:
 
         route_result = conversation.get_tool_result("route_to_expert")
         assert route_result and "Wealth Management" in route_result
-        assert "+1999888002" in response
+        assert "+1999888" in response
 
     def test_routes_real_estate(self, conversation):
         """Property/real estate request → real_estate department."""
@@ -224,7 +224,7 @@ class TestSpecialistRouting:
 
         route_result = conversation.get_tool_result("route_to_expert")
         assert route_result and "Real Estate" in route_result
-        assert "+1999888003" in response
+        assert "+888666" in response
 
     def test_routes_general_premium(self, conversation):
         """
@@ -241,7 +241,7 @@ class TestSpecialistRouting:
         # Should get one of the valid department phone numbers
         assert any(
             phone in response
-            for phone in ["+1999888001", "+1999888002", "+1999888003", "+1999888004"]
+            for phone in ["+9876543", "+1999888", "+888666", "+99887766"]
         ), f"Should include a department phone number. Got: {response}"
 
 

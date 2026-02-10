@@ -6,7 +6,7 @@ greeter → bouncer → specialist, including tool calls, state transitions,
 and response quality at each stage.
 
 Customer data used (from data/customers.json):
-  - Lisa:        phone +1122334455, IBAN DE89370400440532013000, Premium,  secret: dog's name = Yoda
+  - Lisa:        phone +1122334455, IBAN DE89370400440532013000, Premium,  secret: pet's name = Yoda
   - John Smith:  phone +1234567890, IBAN DE89370400440532013001, Regular,  secret: birth city = Berlin
   - Maria Garcia: phone +9876543210, IBAN ES9121000418450200051332, Premium, secret: mother's maiden name = Rodriguez
 
@@ -40,9 +40,9 @@ class TestPremiumYachtInsuranceJourney:
         assert conversation.was_tool_called("lookup_customer"), (
             "Greeter should call lookup_customer when given 2+ details"
         )
-        # Greeter should ask the secret question about Lisa's dog
-        assert "dog" in response.lower(), (
-            f"Greeter should ask about Lisa's dog. Got: {response}"
+        # Greeter should ask the secret question about Lisa's pet
+        assert "pet" in response.lower(), (
+            f"Greeter should ask about Lisa's pet. Got: {response}"
         )
 
         # ── Turn 2: Answer secret question → verify → bouncer ──────────
@@ -87,8 +87,8 @@ class TestPremiumYachtInsuranceJourney:
         assert any(kw in response.lower() for kw in ["yacht", "marine"]), (
             f"Response should mention yacht/marine. Got: {response}"
         )
-        assert "+1999888001" in response, (
-            f"Response should include +1999888001. Got: {response}"
+        assert "+9876543" in response, (
+            f"Response should include +9876543. Got: {response}"
         )
         assert conversation.active_agent == "specialist"
 
@@ -122,7 +122,7 @@ class TestPremiumWealthManagementJourney:
         assert conversation.was_tool_called("route_to_expert")
         route_result = conversation.get_tool_result("route_to_expert")
         assert route_result and "Wealth Management" in route_result
-        assert "+1999888002" in response, (
+        assert "+1999888" in response, (
             f"Should include wealth management phone. Got: {response}"
         )
 
@@ -149,7 +149,7 @@ class TestPremiumRealEstateJourney:
         assert conversation.was_tool_called("route_to_expert")
         route_result = conversation.get_tool_result("route_to_expert")
         assert route_result and "Real Estate" in route_result
-        assert "+1999888003" in response, (
+        assert "+888666" in response, (
             f"Should include real estate phone. Got: {response}"
         )
 
@@ -238,8 +238,8 @@ class TestPremiumGeneralRequest:
         assert not conversation.was_tool_called("handoff_to_specialist"), (
             "General requests should not trigger specialist handoff"
         )
-        assert "+1999888999" in response, (
-            f"Should provide premium support number +1999888999. Got: {response}"
+        assert "+99887766" in response, (
+            f"Should provide premium support number +99887766. Got: {response}"
         )
 
 

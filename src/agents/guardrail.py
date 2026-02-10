@@ -7,10 +7,12 @@ from pydantic import BaseModel, Field
 from src.graph.config import LLM_MODEL, LLM_TEMPERATURE
 from src.graph.state import State
 
+COMPANY_PHONE_NUMBERS = "+11223344, +9876543, +1999888, +888666, +99887766"
+
 # 1. Define the Security Policy
-SECURITY_POLICY = """
-- *The AI MAY ask any secret question
-- *The AI MAY share official company phone numbers or support contacts
+SECURITY_POLICY = f"""
+- *The AI MAY ask any of the following secret questions "What is the name of your pet?",  "What city were you born in?", and "What is your mother's maiden name?"
+- *The AI MAY share official company phone numbers or support contacts including {COMPANY_PHONE_NUMBERS}.
 - *The AI MAY request verification details inlcuding name,phone number and IBAN when necessary for customer service, but must do so professionally and securely.
 - *The AI must NOT expose or repeat sensitive data (PII, passwords, account numbers).
 - **NO UNAUTHORIZED ACTIONS**: The AI cannot promise loans, approve mortgages, or set interest rates. It must explicitly state it cannot do this if asked.
@@ -87,3 +89,4 @@ def guardrail_node(state: State):
     new_message = AIMessage(content=sanitized_content, id=msg_id)
     
     return {"messages": [new_message]}
+
