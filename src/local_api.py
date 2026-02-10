@@ -30,6 +30,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     thread_id: str
+    conversation_ended: bool = False
 
 @app.get("/")
 async def root():
@@ -60,7 +61,12 @@ async def chat(request: ChatRequest):
             elif hasattr(last_msg, "content"):
                 last_response = str(last_msg.content)
             
-        return ChatResponse(response=last_response, thread_id=thread_id)
+        conversation_ended = final_state.get("conversation_ended", False)
+        return ChatResponse(
+            response=last_response,
+            thread_id=thread_id,
+            conversation_ended=conversation_ended,
+        )
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

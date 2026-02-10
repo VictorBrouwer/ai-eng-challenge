@@ -3,6 +3,8 @@ Bouncer agent node.
 """
 
 from langchain_openai import ChatOpenAI
+from langchain_core.messages import AIMessage
+
 from src.graph.state import State
 from src.graph.config import LLM_MODEL, LLM_TEMPERATURE
 from src.tools.bouncer_tools import check_account_status, handoff_to_specialist
@@ -27,7 +29,8 @@ If the status is 'Premium':
   - Politely inform them they are a premium client.
   - Ask how you can help them today.
 - If the user has a request:
-  - Use the `handoff_to_specialist` tool to transfer them to the Specialist.
+  - Use the `handoff_to_specialist` tool ONLY. Do NOT generate any text response alongside it.
+  - When handing off, your response must contain ONLY the tool call—no explanatory text like "I will transfer you" or similar.
 
 Always be polite and professional.
 """
@@ -47,5 +50,24 @@ def bouncer_node(state: State):
     )
     
     response = model_with_tools.invoke(invocation_messages)
-    return {"messages": [response], "active_agent": "bouncer"}
+
+    # When handing off to specialist, do NOT include any text—only the tool call.
+    # Enforce this in code since the user should see either a response OR a transfer, not both.
+    if isinstance(response, AIMessage) and getattr(response, "tool_calls", None):
+        def tool_name(tc):
+            return tc.get("name") if isinstance(tc, dict) else getattr(tc, "name", None)
+        has_handoff = any(tool_name(tc) == "handoff_to_specialist" for tc in response.tool_calls)
+        if has_handoff and response.content:
+            response = AIMessage(
+                content="",
+                tool_calls=response.tool_calls,
+                id=response.id,
+            )
+
+    return {
+        "messages": [response],
+        "active_agent": "bouncer",
+        "is_verified": True,
+        "failed_verification_attempts": 0
+    }
 

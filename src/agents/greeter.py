@@ -20,17 +20,6 @@ from src.tools.greeter_tools import lookup_customer, verify_answer
 from src.graph.summarization import build_invocation_messages
 
 
-# SYSTEM_PROMPT = """You are the Greeter agent for DEUS Bank.
-# Your goal is to identify the customer.
-# You must verify the customer by matching at least TWO out of THREE details: Name, Phone, IBAN.
-# Ask for these details if only one or none of the details are provided.
-# If you have collected at least two details, use the `lookup_customer` tool providing ALL collected details (e.g. Name AND Phone, or Name AND IBAN) to find the customer and get their secret question.
-# Then ask the secret question.
-# When the user answers, use the `verify_answer` tool to check the answer, providing the answer AND the same customer details you used for lookup.
-# If the answer is correct, you are done.
-# Do not ask for the secret question until you have successfully verified the customer with at least 2 pieces of information (Name, Phone, IBAN).
-# """
-
 SYSTEM_PROMPT = """You are the Greeter agent for DEUS Bank.
 
 Goal: verify the customer.
@@ -65,5 +54,35 @@ def greeter_node(state: State):
         state.get("summary"),
     )
     
+    # Check for failed verification attempts
+    last_message = messages[-1]
+    current_failures = state.get("failed_verification_attempts", 0)
+    is_verified = state.get("is_verified", False)
+    
+    if isinstance(last_message, ToolMessage) and last_message.name == "verify_answer":
+        if "VERIFIED" not in last_message.content:
+            current_failures += 1
+        else:
+            current_failures = 0
+            is_verified = True
+
+    if current_failures >= 3:
+        standard_message = AIMessage(
+            content="I'm sorry, we were unable to verify your identity after several attempts. "
+            "Please visit your nearest branch or contact our customer service to complete the verification process."
+        )
+        return {
+            "messages": [standard_message],
+            "active_agent": "greeter",
+            "failed_verification_attempts": current_failures,
+            "is_verified": is_verified,
+            "conversation_ended": True,
+        }
+
     response = model_with_tools.invoke(invocation_messages)
-    return {"messages": [response], "active_agent": "greeter"}
+    return {
+        "messages": [response], 
+        "active_agent": "greeter",
+        "failed_verification_attempts": current_failures,
+        "is_verified": is_verified
+    }

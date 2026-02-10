@@ -260,6 +260,8 @@
             sendButton.disabled = true;
             sendButton.textContent = 'Sending...';
 
+            let conversationEnded = false;
+
             try {
                 const requestBody = {
                     message: message,
@@ -280,6 +282,7 @@
                 }
 
                 const data = await response.json();
+                conversationEnded = data.conversation_ended || false;
                 
                 // Store thread_id from first response
                 if (data.thread_id && !threadId) {
@@ -289,13 +292,22 @@
                 // Add AI response to chat
                 addMessage(data.response || 'No response received', false);
 
+                // If conversation ended, disable input
+                if (conversationEnded) {
+                    messageInput.disabled = true;
+                    messageInput.placeholder = 'This conversation has ended. Please start a new chat if you need further assistance.';
+                    sendButton.textContent = 'Session ended';
+                }
+
             } catch (error) {
                 showError(error.message || 'Failed to send message. Please try again.');
             } finally {
-                // Re-enable button
-                sendButton.disabled = false;
-                sendButton.textContent = 'Send';
-                messageInput.focus();
+                // Re-enable button unless conversation ended
+                if (!conversationEnded) {
+                    sendButton.disabled = false;
+                    sendButton.textContent = 'Send';
+                    messageInput.focus();
+                }
             }
         }
 

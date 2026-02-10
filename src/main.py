@@ -62,6 +62,11 @@ def main():
                 last_msg = state_messages[-1]
                 if isinstance(last_msg, AIMessage):
                     print(f"\nAI: {last_msg.content}\n")
+
+            # End session if conversation was closed (e.g. 3 failed verifications)
+            if final_state.get("conversation_ended", False):
+                print("This conversation has ended.")
+                break
             
             # Debug output (optional, commented out for cleaner UX)
             # print("-" * 30)

@@ -12,4 +12,7 @@ class State(MessagesState):
 
     active_agent: str = "greeter"
     summary: Optional[str] = None
+    failed_verification_attempts: int = 0
+    is_verified: bool = False
+    conversation_ended: bool = False
 

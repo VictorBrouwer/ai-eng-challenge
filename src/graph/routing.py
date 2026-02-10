@@ -51,11 +51,7 @@ def greeter_router(state: State) -> Literal["end_interaction", "call_tool", "go_
     last_message = messages[-1]
 
     # Failed verification attempts check
-    failed_attempts = 0
-    for msg in messages:
-        if isinstance(msg, ToolMessage) and msg.name == "verify_answer":
-            if "VERIFIED" not in msg.content:
-                failed_attempts += 1
+    failed_attempts = state.get("failed_verification_attempts", 0)
     
     if failed_attempts >= 3:
         return "end_interaction"
@@ -65,14 +61,7 @@ def greeter_router(state: State) -> Literal["end_interaction", "call_tool", "go_
         return "call_tool"
 
     # Success Check (anywhere in history)
-    is_verified = False
-    for msg in messages:
-        if isinstance(msg, ToolMessage) and msg.name == "verify_answer":
-            if "VERIFIED" in msg.content:
-                is_verified = True
-                break
-    
-    if is_verified:
+    if state.get("is_verified", False):
         return "go_to_bouncer"
 
     # Default: wait for user input
@@ -141,11 +130,7 @@ def route_after_guardrail(state: State) -> Literal["await_input", "__end__"]:
 
     if active_agent == "greeter":
         # Check for failed verification attempts
-        failed_attempts = 0
-        for msg in messages:
-            if isinstance(msg, ToolMessage) and msg.name == "verify_answer":
-                if "VERIFIED" not in msg.content:
-                    failed_attempts += 1
+        failed_attempts = state.get("failed_verification_attempts", 0)
         
         if failed_attempts >= 3:
             return "__end__"

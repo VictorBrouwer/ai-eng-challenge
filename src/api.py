@@ -31,6 +31,7 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     thread_id: str
+    conversation_ended: bool = False
 
 @app.get("/")
 async def root():
@@ -83,8 +84,13 @@ async def chat(request: ChatRequest):
                     if msg_type == "ai":
                         last_response = msg.get("content", "")
                         break
-            
-            return ChatResponse(response=last_response, thread_id=thread_id)
+
+            conversation_ended = values.get("conversation_ended", False)
+            return ChatResponse(
+                response=last_response,
+                thread_id=thread_id,
+                conversation_ended=conversation_ended,
+            )
 
         except httpx.RequestError as e:
             raise HTTPException(status_code=503, detail=f"Error communicating with LangGraph API: {str(e)}")
