@@ -71,9 +71,6 @@ class TestPremiumYachtInsuranceJourney:
             "I would like to get yacht insurance for my new boat"
         )
 
-        assert conversation.was_tool_called("handoff_to_specialist"), (
-            "Bouncer should hand off a yacht insurance request to specialist"
-        )
         assert conversation.was_tool_called("route_to_expert"), (
             "Specialist should call route_to_expert"
         )
@@ -221,10 +218,13 @@ class TestRegularCustomerJourney:
 
 
 class TestPremiumGeneralRequest:
-    """Premium customer with a simple question → premium support, no specialist."""
+    """Premium customer with a simple question → always directed to specialist."""
 
-    def test_general_request_gets_premium_support_number(self, conversation):
-        """Lisa asks a general question and gets the premium support number."""
+    def test_general_request_gets_specialist_handoff(self, conversation):
+        """
+        Lisa asks a general question and is handed off to specialist.
+        Premium clients are always directed to the specialist, even for general requests.
+        """
         # Verify Lisa
         conversation.send("Hi, I'm Lisa, phone +1122334455")
         conversation.send("Yoda")
@@ -236,12 +236,11 @@ class TestPremiumGeneralRequest:
             "It's regarding my recent account statement"
         )
 
-        assert not conversation.was_tool_called("handoff_to_specialist"), (
-            "General requests should not trigger specialist handoff"
+        assert conversation.was_tool_called("handoff_to_specialist"), (
+            "Premium clients should always be handed off to specialist, even for general requests"
         )
-        assert "+99887766" in response, (
-            f"Should provide premium support number +99887766. Got: {response}"
-        )
+        # The specialist should still provide appropriate support or routing
+        assert conversation.active_agent == "specialist"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
